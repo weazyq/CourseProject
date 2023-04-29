@@ -1,0 +1,26 @@
+﻿<Window x:Class="WpfApp.View.ArrayView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp.View"
+        xmlns:vm="clr-namespace:WpfApp.ViewModel"
+        mc:Ignorable="d"
+        Background="#181618"
+        Title="Данные" 
+        Width="400"
+        Height="400">
+    <DataGrid Name="Array"
+              Margin="20"
+              HorizontalContentAlignment="Center"
+              VerticalContentAlignment="Center"
+              AutoGenerateColumns="False"
+              Grid.Column="1"
+              ItemsSource="{Binding}"
+              IsReadOnly="True" Grid.ColumnSpan="2">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Индекс" Binding="{Binding [0]}"/>
+            <DataGridTextColumn Header="Значение" Binding="{Binding [1]}"/>
+        </DataGrid.Columns>
+    </DataGrid>
+</Window>
