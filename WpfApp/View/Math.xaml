@@ -1,0 +1,399 @@
+﻿<UserControl x:Class="WpfApp.View.Math"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfApp.View"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:utils="clr-namespace:WpfApp.Utils"
+             xmlns:model="clr-namespace:WpfApp.Model"
+             xmlns:dataGrid2D="http://gu.se/DataGrid2D"
+             xmlns:vm="clr-namespace:WpfApp.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{StaticResource Page_Style}">
+    <UserControl.DataContext>
+        <vm:MathVM/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <utils:TextBoxLengthConverter x:Key="TextBoxLengthConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0.9*"/>
+        </Grid.RowDefinitions>
+        <Menu Background="#303030">
+            <MenuItem Header="_Файл"
+                      Icon="{materialDesign:PackIcon Kind=About}">
+                <MenuItem
+                    Name="SaveBtn"
+                    Header="Сохранить"
+                    Icon="{materialDesign:PackIcon Kind=ContentSave}"
+                    Command="{Binding SaveDataCommand}"/>
+                <Separator />
+                <MenuItem
+                    Header="Справка"
+                    Name="Helper"
+                    Icon="{materialDesign:PackIcon Kind=HelpBox}"
+                    Command="{Binding ShowHelpCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Очистить"
+                      Command="{Binding ClearArraysCommand}"
+                      Icon="{materialDesign:PackIcon Kind=DeleteEmpty}"/>
+        </Menu>
+        <TabControl Grid.Row="1">
+            <TabItem Header="Массив A">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.3*"/>
+                        <ColumnDefinition Width="0.7*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical"
+                                VerticalAlignment="Top"
+                                Margin="20 20 20 0">
+
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Нач. (x)"
+                                             x:Name="TextBoxX1"
+                                             Margin="0 20 0 0"
+                                             Text="{Binding X1}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Кон.(x)"
+                                             Margin="0 20 0 0"
+                                             x:Name="TextBoxX2"
+                                             Text="{Binding X2}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Шаг (h)"
+                                             Margin="0 20 0 0"
+                                             x:Name="TextBoxH"
+                                             Text="{Binding H}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Точность вычислений (e)"
+                                             Margin="0 20 0 0"
+                                             x:Name="TextBoxE"
+                                             Text="{Binding Precision}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <Button Content="Рассчитать"
+                                Margin="0 20 0 0"
+                                Command="{Binding ArrayACommand}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Value="True">
+                                                    <Condition.Binding>
+                                                        <MultiBinding Converter="{StaticResource TextBoxLengthConverter}">
+                                                            <Binding ElementName="TextBoxX1" Path="Text.Length"/>
+                                                            <Binding ElementName="TextBoxX2" Path="Text.Length"/>
+                                                            <Binding ElementName="TextBoxH" Path="Text.Length"/>
+                                                            <Binding ElementName="TextBoxE" Path="Text.Length"/>
+                                                        </MultiBinding>
+                                                    </Condition.Binding>
+                                                </Condition>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="0.95*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0 5 20 5">
+
+                            <Button Style="{StaticResource MaterialDesignIconButton}"
+                                    Name="ArrayAShow"
+                                    Height="30"
+                                    Width="30"
+                                    ToolTip="Открыть в отдельном окне"
+                                    Command="{Binding ShowArrayACommand}">
+                                <Image Source="/Images/OpenInWindow.png"
+                                   Height="15"
+                                   Width="15"/>
+                            </Button>
+                        </StackPanel>
+
+                        <DataGrid Name="ArrayA"
+                                  Margin="20 0 20 20"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  AutoGenerateColumns="False"
+                                  Grid.Row="1"
+                                  IsReadOnly="True"
+                                  ItemsSource="{Binding ArrayAItems}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="X" Binding="{Binding [0]}"/>
+                                <DataGridTextColumn Header="F(X)" Binding="{Binding [1]}"/>
+                                <DataGridTextColumn Header="KFX" Binding="{Binding [1]}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem
+                        Header="Матрица B"
+                        Name="navItemArrB">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.3*"/>
+                        <ColumnDefinition Width="0.7*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical"
+                                VerticalAlignment="Top"
+                                Margin="20 20 20 0">
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Нижняя граница"
+                                             x:Name="TextBoxLowerBound"
+                                             Margin="0 20 0 0"
+                                             Text="{Binding LowerBound}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Верхняя граница"
+                                             x:Name="TextBoxUpperBound"
+                                             Margin="0 20 0 0"
+                                             Text="{Binding UpperBound}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <Button Content="Рассчитать"
+                                Margin="0 20 0 0"
+                                Command="{Binding ArrayBCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Value="True">
+                                                    <Condition.Binding>
+                                                        <MultiBinding Converter="{StaticResource TextBoxLengthConverter}">
+                                                            <Binding ElementName="TextBoxLowerBound" Path="Text.Length"/>
+                                                            <Binding ElementName="TextBoxUpperBound" Path="Text.Length"/>
+                                                        </MultiBinding>
+                                                    </Condition.Binding>
+                                                </Condition>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="0.95*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0 5 20 5">
+
+                            <Button Style="{StaticResource MaterialDesignIconButton}"
+                                    Name="ArrayBShow"
+                                    Height="30"
+                                    Width="30"
+                                    ToolTip="Открыть в отдельном окне"
+                                    Command="{Binding ShowArrayBCommand}">
+                                <Image Source="/Images/OpenInWindow.png"
+                                   Height="15"
+                                   Width="15"/>
+                            </Button>
+                        </StackPanel>
+
+                        <DataGrid Name="ArrayB"
+                                  Margin="20 0 20 20"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  dataGrid2D:ItemsSource.Array2D="{Binding ArrayB}"
+                                  dataGrid2D:Index.StartAt="1"
+                                  Grid.Row="1"
+                                  IsReadOnly="True">
+                        </DataGrid>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Массив C"
+                     Name="navItemArrC">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.3*"/>
+                        <ColumnDefinition Width="0.7*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical"
+                                    VerticalAlignment="Top"
+                                    Margin="20 20 20 0">
+                        <Button Content="Рассчитать"
+                                Margin="0 20 0 0"
+                                Command="{Binding ArrayCCommand}"/>
+                    </StackPanel>
+
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="0.90*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0 5 20 5">
+
+                            <Button Style="{StaticResource MaterialDesignIconButton}"
+                                    Name="ArrayCShow"
+                                    Height="30"
+                                    Width="30"
+                                    ToolTip="Открыть в отдельном окне"
+                                    Command="{Binding ShowArrayCCommand}">
+                                <Image Source="/Images/OpenInWindow.png"
+                                   Height="15"
+                                   Width="15"/>
+                            </Button>
+                        </StackPanel>
+
+                        <DataGrid Name="ArrayC"
+                                  Margin="20 0 20 20"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  AutoGenerateColumns="False"
+                                  Grid.Row="1"
+                                  IsReadOnly="True"
+                                  ItemsSource="{Binding ArrayCItems}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Индекс" Binding="{Binding [0]}"/>
+                                <DataGridTextColumn Header="Значение" Binding="{Binding [1]}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Массив Y"
+                     Name="navItemArrY">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="0.90*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="0 5 20 5">
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                                Name="ArrayYShow"
+                                Height="30"
+                                Width="30"
+                                ToolTip="Открыть в отдельном окне"
+                                Command="{Binding ShowArrayYCommand}">
+                            <Image Source="/Images/OpenInWindow.png"
+                                   Height="15"
+                                   Width="15"/>
+                        </Button>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="0 5 20 5">
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                                    Name="graphBtn"
+                                    ToolTip="Построить график"
+                                    Height="30"
+                                    Width="30"
+                                    Command="{Binding ShowGraphCommand}">
+                            <Image Source="/Images/graph.png"
+                                   Height="15"
+                                   Width="15"/>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                                Name="ArrayYSortShow"
+                                Height="30"
+                                Width="30"
+                                ToolTip="Открыть в отдельном окне"
+                                Command="{Binding ShowArrayYSortCommand}">
+                            <Image Source="/Images/OpenInWindow.png"
+                                   Height="15"
+                                   Width="15"/>
+                        </Button>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Vertical"
+                                VerticalAlignment="Top"
+                                Grid.Row="1"
+                                Margin="20,0,20,0">
+
+                        <utils:DigitTextBox materialDesign:HintAssist.Hint="Шаг (g)"
+                                             x:Name="TextBoxG"
+                                             Text="{Binding G}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"/>
+
+                        <Button Content="Рассчитать"
+                                Margin="0 20 0 0"
+                                Command="{Binding ArrayYCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=TextBoxG, Path=Text.Length}" Value="0">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+
+                    <Grid Grid.Column="1"
+                          Grid.Row="1">
+                        <DataGrid Name="ArrayY"
+                                  Margin="20 0 20 20"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  AutoGenerateColumns="False"
+                                  Grid.Row="1"
+                                  IsReadOnly="True"
+                                  ItemsSource="{Binding ArrayYItems}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Индекс" Binding="{Binding [0]}"/>
+                                <DataGridTextColumn Header="Значение" Binding="{Binding [1]}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+                    <DataGrid Name="ArrayYSort"
+                              Grid.Column="2"
+                              Grid.Row="1"
+                              Margin="20,0,20,20"
+                              AutoGenerateColumns="False"
+                              HorizontalContentAlignment="Center"
+                              VerticalContentAlignment="Center"
+                              IsReadOnly="True"
+                              ItemsSource="{Binding ArrayYItemsSorted}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Индекс" Binding="{Binding [0]}"/>
+                            <DataGridTextColumn Header="Значение" Binding="{Binding [1]}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
